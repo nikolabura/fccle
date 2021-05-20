@@ -12,6 +12,12 @@
         integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
         crossorigin=""></script>
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css"
+        crossorigin="" />
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js" crossorigin=""></script>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <style>
         body {
@@ -32,6 +38,19 @@
             padding: 30px;
             width: 40rem;
         }
+
+        .sidebar_button {
+            height: 2.5rem;
+            width: 100%;
+            margin: 8px 0px;
+        }
+
+        .smaller_button {
+            height: 2.5rem;
+            width: 48%;
+            margin: 8px 0px;
+            flex-grow: 1;
+        }
     </style>
 
     <link rel="shortcut icon" href="/static/favicon.ico">
@@ -40,8 +59,25 @@
 <body>
     <div id="sidebar">
         <img src="/static/text_icon.png" height="60">
-        <hr style="margin-bottom: 25px;">
-        <button onclick="loadMicrowave()">Load Microwave Towers in Area</button>
+        <hr style="margin-bottom: 18px;">
+        <button onclick="loadMicrowave()" class="sidebar_button">
+            <span class="material-icons" style="vertical-align: middle;">travel_explore</span>
+            Load Microwave Towers in Area</button>
+        <button onclick="analyzeCluster()" class="sidebar_button">
+            <span class="material-icons" style="vertical-align: middle;">moving</span>
+            Path Trace all in Cluster</button>
+        <div style="display: flex; flex-direction: row; gap: 8px;">
+            <button onclick="clearTowers()" class="smaller_button">
+                <span class="material-icons" style="vertical-align: middle;">delete</span>
+                Clear Towers</button>
+            <button onclick="clearPaths()" class="smaller_button">
+                <span class="material-icons" style="vertical-align: middle;">delete</span>
+                Clear Paths</button>
+        </div>
+        <textarea id="log" readonly="true" style="width: 100%; margin-top: 18px; color: gray"
+            rows="20">FCCLE Log</textarea>
+        <textarea id="dash" readonly="true" style="width: 100%; margin-top: 18px; color: gray"
+            rows="3">Activity Indicator</textarea>
     </div>
     <div id="map"></div>
     <script src="/static/fccle.js"></script>
