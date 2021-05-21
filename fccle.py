@@ -43,6 +43,40 @@ def microwave_towers():
     cur.close()
     return jsonify(towers)
 
+
+@app.route("/api/paging_towers")
+def paging_towers():
+    lat = request.args.get("lat")
+    lon = request.args.get("lon")
+    sql = """
+    SELECT jsonb_build_object(
+        'type',     'FeatureCollection',
+        'features', jsonb_agg(features.feature)
+    )
+    FROM (
+        SELECT jsonb_build_object(
+            'type',       'Feature',
+            'id',         id,
+            'geometry',   ST_AsGeoJSON(geom)::jsonb,
+            'properties', to_jsonb(inputs) - 'gid' - 'geom'
+        ) AS feature
+        FROM (
+            SELECT *
+            FROM fccle."dd_paging_LO"
+            WHERE ST_DWithin(geom,
+                             ST_SetSRID(ST_MakePoint(%s,%s), 4326),
+                             0.2)
+            LIMIT 700
+        ) inputs
+    ) features;
+    """
+    cur = conn.cursor()
+    cur.execute(sql, (lon, lat))
+    towers = cur.fetchone()
+    cur.close()
+    return jsonify(towers)
+
+
 @app.route("/api/microwave_paths")
 def microwave_paths():
     iterations = request.args.get("iterations")

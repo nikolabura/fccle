@@ -15,11 +15,11 @@ const CartoDB_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_al
 });
 
 var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+  attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
 });
 
 var wmsLayer = L.tileLayer.wms('http://fccle.greenbank.lan:8080/geoserver/dd_micro_LO/wms?', {
-    layers: "dd_micro_LO"
+  layers: "dd_micro_LO"
 })
 
 CartoDB_Positron.addTo(map);
@@ -152,4 +152,32 @@ function clearTowers() {
 function clearPaths() {
   paths = [];
   paths_layer.remove();
+}
+
+
+let paging_towers = L.geoJSON(null, {
+  onEachFeature: (feature, layer) => {
+    const freq = feature.properties.paging_EM_frequency_assigned;
+    layer.bindPopup("Call sign: <b>" + feature.properties.call_sign + "</b><br>"
+      + "Assigned frequency: <b><a href=\"cubicsdr://" + freq + "\">" + freq + " MHz</a></b><br>");
+  }
+}).addTo(map);
+function loadPaging() {
+  const center = map.getCenter();
+  fetch("/api/paging_towers?lat=" + center.lat + "&lon=" + center.lng)
+    .then(response => response.json())
+    .then(data => {
+      data = data[0];
+      const existing_ids = paging_towers.toGeoJSON().features.map((x) => x.id);
+      let addedCount = 0;
+      for (feature of data.features) {
+        if (!existing_ids.includes(feature.id)) {
+          paging_towers.addData(feature);
+          addedCount++;
+        }
+      }
+      //paging_towers.clearLayers();
+      map.addLayer(paging_towers);
+      log(`Database returned ${data.features.length} PAGING towers. ${addedCount} were new.`);
+    });
 }
