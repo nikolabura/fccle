@@ -25,7 +25,7 @@ var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 });
 
-var wmsLayer = L.tileLayer.wms('http://fccle.greenbank.lan/gs/geoserver/dd_micro_LO/wms?', {
+var wmsLayer = L.tileLayer.wms('/gs/geoserver/dd_micro_LO/wms?', {
   layers: "dd_micro_LO",
   transparency: "true",
   opacity: 0.35
