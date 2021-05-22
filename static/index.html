@@ -42,14 +42,26 @@
         .sidebar_button {
             height: 2.5rem;
             width: 100%;
-            margin: 8px 0px;
+            margin: 4px 0px;
         }
 
         .smaller_button {
             height: 2.5rem;
             width: 48%;
-            margin: 8px 0px;
+            margin: 4px 0px;
             flex-grow: 1;
+            white-space: nowrap;
+        }
+
+        .flex_button_holder {
+            display: flex;
+            flex-direction: row;
+            gap: 8px;
+        }
+
+        .activated_button {
+            background-color: #e69fe4;
+            border: black 2px dashed;
         }
     </style>
 
@@ -63,10 +75,15 @@
         <button onclick="loadMicrowave()" class="sidebar_button">
             <span class="material-icons" style="vertical-align: middle;">travel_explore</span>
             Load Microwave Towers in Area</button>
-        <button onclick="analyzeCluster()" class="sidebar_button">
-            <span class="material-icons" style="vertical-align: middle;">moving</span>
-            Path Trace all in Cluster</button>
-        <div style="display: flex; flex-direction: row; gap: 8px;">
+        <div class="flex_button_holder">
+            <button onclick="analyzeCluster()" id="analyzeClusterButton" class="sidebar_button">
+                <span class="material-icons" style="vertical-align: middle;">moving</span>
+                <span id="analyzeClusterButtonText">Path Trace all in Cluster</span></button>
+            <input type="text" style="
+                margin: 4px 0px; max-width: 4em; height: 2.4rem; display: block" name="inflight" id="inflight" readonly
+                placeholder="in flight">
+        </div>
+        <div class="flex_button_holder">
             <button onclick="clearTowers()" class="smaller_button">
                 <span class="material-icons" style="vertical-align: middle;">delete</span>
                 Clear Towers</button>
@@ -74,11 +91,19 @@
                 <span class="material-icons" style="vertical-align: middle;">delete</span>
                 Clear Paths</button>
         </div>
-        <textarea id="log" readonly="true" style="width: 100%; margin-top: 18px; color: gray"
-            rows="20">FCCLE Log</textarea>
-        <textarea id="dash" readonly="true" style="width: 100%; margin-top: 18px; color: gray"
+        <div class="flex_button_holder">
+            <button onclick="downloadTowers()" class="smaller_button">
+                <span class="material-icons" style="vertical-align: middle;">file_download</span>
+                Export Towers</button>
+            <button onclick="downloadPaths()" class="smaller_button">
+                <span class="material-icons" style="vertical-align: middle;">file_download</span>
+                Export Paths</button>
+        </div>
+        <textarea id="log" readonly="true" style="width: calc(100% - 6px); margin-top: 15px; color: gray"
+            rows="15">FCCLE Log</textarea>
+        <textarea id="dash" readonly="true" style="width: calc(100% - 6px); margin-top: 15px; color: gray"
             rows="3">Activity Indicator</textarea>
-        <button onclick="loadPaging()" class="sidebar_button" style="margin-top: 12px;">
+        <button onclick="loadPaging()" class="sidebar_button" style="margin-top: 15px;">
             <span class="material-icons" style="vertical-align: middle;">phone</span>
             Load Paging Towers in Area</button>
     </div>

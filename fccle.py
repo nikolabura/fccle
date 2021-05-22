@@ -13,8 +13,10 @@ def root():
 
 @app.route("/api/microwave_towers")
 def microwave_towers():
-    lat = request.args.get("lat")
-    lon = request.args.get("lon")
+    swlat = request.args.get("swlat")
+    swlon = request.args.get("swlon")
+    nelat = request.args.get("nelat")
+    nelon = request.args.get("nelon")
     sql = """
     SELECT jsonb_build_object(
         'type',     'FeatureCollection',
@@ -23,22 +25,20 @@ def microwave_towers():
     FROM (
         SELECT jsonb_build_object(
             'type',       'Feature',
-            'id',         id,
+            'id',         fid,
             'geometry',   ST_AsGeoJSON(geom)::jsonb,
             'properties', to_jsonb(inputs) - 'gid' - 'geom'
         ) AS feature
         FROM (
             SELECT *
-            FROM fccle."dd_micro_LO"
-            WHERE ST_DWithin(geom,
-                             ST_SetSRID(ST_MakePoint(%s,%s), 4326),
-                             0.09)
-            LIMIT 700
+            FROM public.dd_micro_lo
+            WHERE ST_Intersects(ST_MakeEnvelope(%s,%s,%s,%s, 4326), geom)
+            LIMIT 4000
         ) inputs
     ) features;
     """
     cur = conn.cursor()
-    cur.execute(sql, (lon, lat))
+    cur.execute(sql, (swlon, swlat, nelon, nelat))
     towers = cur.fetchone()
     cur.close()
     return jsonify(towers)
@@ -46,8 +46,10 @@ def microwave_towers():
 
 @app.route("/api/paging_towers")
 def paging_towers():
-    lat = request.args.get("lat")
-    lon = request.args.get("lon")
+    swlat = request.args.get("swlat")
+    swlon = request.args.get("swlon")
+    nelat = request.args.get("nelat")
+    nelon = request.args.get("nelon")
     sql = """
     SELECT jsonb_build_object(
         'type',     'FeatureCollection',
@@ -63,15 +65,13 @@ def paging_towers():
         FROM (
             SELECT *
             FROM fccle."dd_paging_LO"
-            WHERE ST_DWithin(geom,
-                             ST_SetSRID(ST_MakePoint(%s,%s), 4326),
-                             0.2)
-            LIMIT 700
+            WHERE ST_Intersects(ST_MakeEnvelope(%s,%s,%s,%s, 4326), geom)
+            LIMIT 3000
         ) inputs
     ) features;
     """
     cur = conn.cursor()
-    cur.execute(sql, (lon, lat))
+    cur.execute(sql, (swlon, swlat, nelon, nelat))
     towers = cur.fetchone()
     cur.close()
     return jsonify(towers)
@@ -118,13 +118,13 @@ def microwave_paths():
         sql = """
         SELECT jsonb_build_object(
             'type',       'Feature',
-            'id',         id,
+            'id',         fid,
             'geometry',   ST_AsGeoJSON(geom)::jsonb,
             'properties', to_jsonb(inputs) - 'gid' - 'geom'
         ) AS feature
         FROM (
             SELECT *
-            FROM fccle."dd_micro_LO"
+            FROM public.dd_micro_lo
             WHERE call_sign = %s AND location_number = %s
             LIMIT 500
         ) inputs;
@@ -134,3 +134,6 @@ def microwave_paths():
         partners_json_out.append(partner_geojson)
     cur.close()
     return jsonify(partners_json_out)
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0')
