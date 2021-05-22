@@ -140,6 +140,8 @@ microwave_markers.on("clusterclick", (e) => {
   console.log(e);*/
   // get markers in cluster
   awaiting_mass_click = false;
+  document.getElementById("analyzeClusterButton").classList.remove("activated_button");
+  document.getElementById("analyzeClusterButtonText").innerText = "Path Trace all in Cluster";
   markers = e.layer.getAllChildMarkers();
   if (markers.length > 100) {
     const confout = confirm(`Warning: This cluster contains ${markers.length} microwave towers.`
