@@ -6,4 +6,6 @@ Pronounced "fickle"!
 
 The server-side backend code is in `fccle.py`.
 
-The client-side frontend code is in the `static` folder.
+The client-side frontend code is in the `static/` folder.
+
+![diagram](https://user-images.githubusercontent.com/2071451/119215670-21861800-ba9d-11eb-9db1-2d8b0e69ee39.png)
